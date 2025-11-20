@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
 
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
-    private Vector2 currentVelocity;
+    public Vector2 currentVelocity;
     private FacingDirection facing = FacingDirection.right;
 
     void Start()
@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsWalking()
     {
-        return false;
+        return Mathf.Abs(rb.linearVelocity.x) > 0.1f;
     }
     public bool IsGrounded()
     {
@@ -68,6 +68,17 @@ public class PlayerController : MonoBehaviour
 
     public FacingDirection GetFacingDirection()
     {
-        return FacingDirection.left;
+        if(currentVelocity.x < 0f)
+        {
+            return FacingDirection.left;
+        }
+
+        if (currentVelocity.x > 0f)
+        {
+            return FacingDirection.right;
+        }
+
+        return facing;
+
     }
 }

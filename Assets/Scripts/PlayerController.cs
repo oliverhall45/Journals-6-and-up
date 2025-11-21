@@ -11,10 +11,13 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     public Vector2 currentVelocity;
     private FacingDirection facing = FacingDirection.right;
+    private BoxCollider2D box;
+    public LayerMask groundLayer;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        box = GetComponent<BoxCollider2D>();
     }
 
     void Update()
@@ -36,6 +39,15 @@ public class PlayerController : MonoBehaviour
         // manage the actual movement of the character.
         Vector2 playerInput = new Vector2(xInput, 0f);
         MovementUpdate(playerInput);
+
+        if (IsGrounded())
+        {
+            Debug.Log("true");
+        }
+        else
+        {
+            Debug.Log("false");
+        }
     }
 
     private void MovementUpdate(Vector2 playerInput)
@@ -45,12 +57,12 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = currentVelocity;
 
         //update facing direction
-        if (playerInput.x < 0)
+        if (playerInput.x < 0f)
         {
             facing = FacingDirection.left;
         }
             
-        else if (playerInput.x > 0)
+        else if (playerInput.x > 0f)
         {
             facing = FacingDirection.right;
         }
@@ -59,11 +71,38 @@ public class PlayerController : MonoBehaviour
 
     public bool IsWalking()
     {
-        return Mathf.Abs(rb.linearVelocity.x) > 0.1f;
+        if (currentVelocity.x == 0f) 
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
+
+
     public bool IsGrounded()
     {
-        return false;
+        float extraHeight = 0.1f; //distance below feet to check
+
+        //position slightly above the bottom of the player
+        Vector2 origin = new Vector2(box.bounds.center.x, box.bounds.min.y + 0.01f);
+
+        //thin horizontal box for feet
+        Vector2 boxSize = new Vector2(box.bounds.size.x * 0.9f, 0.02f);
+
+        //make the boxCast downward
+        RaycastHit2D hit = Physics2D.BoxCast(origin, boxSize, 0f, Vector2.down, extraHeight, groundLayer);
+
+        if (hit.collider != null)
+        {
+            return true; //on ground
+        }
+        else
+        {
+            return false; //in air
+        }
     }
 
     public FacingDirection GetFacingDirection()

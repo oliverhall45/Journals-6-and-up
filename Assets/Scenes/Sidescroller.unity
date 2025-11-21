@@ -312,7 +312,7 @@ GameObject:
   - component: {fileID: 1054579206}
   - component: {fileID: 1054579210}
   - component: {fileID: 1054579209}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: GroundTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1702,6 +1702,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  currentVelocity: {x: 0, y: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 16
 --- !u!4 &1433354315
 Transform:
   m_ObjectHideFlags: 0

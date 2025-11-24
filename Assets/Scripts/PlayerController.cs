@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     public float apexHeight = 1.25f;
     public float apexTime = 0.3f;
     public float terminalSpeed = 5f;
+    public float coyoteTime = 0.1f;
+    public float coyoteTimer = 0f;
 
     void Start()
     {
@@ -71,13 +73,23 @@ public class PlayerController : MonoBehaviour
             facing = FacingDirection.right;
         }
 
-        
+        if (IsGrounded())
+        {
+            coyoteTimer = coyoteTime;  //reset when on the ground
+        }
+        else
+        {
+            coyoteTimer -= Time.deltaTime;  //count down when off the ground
+        }
+
         //checks if the player pressed the space bar while also on the ground. this will make them jump
-        if(Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+        if (Input.GetKeyDown(KeyCode.Space) && coyoteTimer > 0f)
         {
             float jumpVelocity = (2f * apexHeight) / apexTime;
             rb.gravityScale = 0;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
+
+            coyoteTimer = 0f; //prevents double coyote jumps
         }
         else
         {

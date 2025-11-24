@@ -1706,6 +1706,11 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 16
+  apexHeight: 1.25
+  apexTime: 0.3
+  terminalSpeed: 5
+  coyoteTime: 0.1
+  coyoteTimer: 0
 --- !u!4 &1433354315
 Transform:
   m_ObjectHideFlags: 0
@@ -1849,7 +1854,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!1 &1598075209
 GameObject:
   m_ObjectHideFlags: 0

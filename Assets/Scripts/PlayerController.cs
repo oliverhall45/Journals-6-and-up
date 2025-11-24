@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour
     private BoxCollider2D box;
     public LayerMask groundLayer;
 
+    public float apexHeight = 1f;
+    public float apexTime = 0.3f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -65,6 +68,19 @@ public class PlayerController : MonoBehaviour
         else if (playerInput.x > 0f)
         {
             facing = FacingDirection.right;
+        }
+
+        
+        
+        if(Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+        {
+            float jumpVelocity = 2f * apexHeight / apexTime;
+            rb.gravityScale = 0;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
+        }
+        else
+        {
+            rb.gravityScale = 1;
         }
             
     }

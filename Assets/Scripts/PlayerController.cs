@@ -14,8 +14,9 @@ public class PlayerController : MonoBehaviour
     private BoxCollider2D box;
     public LayerMask groundLayer;
 
-    public float apexHeight = 1f;
+    public float apexHeight = 1.25f;
     public float apexTime = 0.3f;
+    public float terminalSpeed = 5f;
 
     void Start()
     {
@@ -71,10 +72,10 @@ public class PlayerController : MonoBehaviour
         }
 
         
-        
+        //checks if the player pressed the space bar while also on the ground. this will make them jump
         if(Input.GetKeyDown(KeyCode.Space) && IsGrounded())
         {
-            float jumpVelocity = 2f * apexHeight / apexTime;
+            float jumpVelocity = (2f * apexHeight) / apexTime;
             rb.gravityScale = 0;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
         }
@@ -82,7 +83,13 @@ public class PlayerController : MonoBehaviour
         {
             rb.gravityScale = 1;
         }
-            
+
+        //checks if the terminal velocity has been reached. If so, it won't exceed it
+        if (rb.linearVelocity.y < -terminalSpeed)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -terminalSpeed);
+        }
+
     }
 
     public bool IsWalking()

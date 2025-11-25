@@ -7,6 +7,13 @@ public class PlayerController : MonoBehaviour
         left, right
     }
 
+    public enum CharacterState
+    {
+        Idle, Walking, Jumping, Dead
+    }
+
+    private CharacterState state = CharacterState.Idle;
+
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
     public Vector2 currentVelocity;

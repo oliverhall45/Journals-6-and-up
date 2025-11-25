@@ -1,1 +1,0 @@
-# Journals-6-and-up

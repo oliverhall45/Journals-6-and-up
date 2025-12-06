@@ -21,8 +21,8 @@ public class PlayerController : MonoBehaviour
     private BoxCollider2D box;
     public LayerMask groundLayer;
 
-    public float apexHeight = 1.25f;
-    public float apexTime = 0.3f;
+    public float apexHeight = 1f;
+    public float apexTime = 0.2f;
     public float terminalSpeed = 5f;
     public float coyoteTime = 0.1f;
     public float coyoteTimer = 0f;

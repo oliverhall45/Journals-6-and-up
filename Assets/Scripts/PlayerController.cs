@@ -20,12 +20,18 @@ public class PlayerController : MonoBehaviour
     private FacingDirection facing = FacingDirection.right;
     private BoxCollider2D box;
     public LayerMask groundLayer;
+    public LayerMask wallLayer;
 
-    public float apexHeight = 1f;
-    public float apexTime = 0.2f;
+    //public float apexHeight = 1f;
+   // public float apexTime = 0.2f;
+
+    public float jumpForce = 8f;
+    public float jumpCutMultiplier = 0.5f;
     public float terminalSpeed = 5f;
     public float coyoteTime = 0.1f;
     public float coyoteTimer = 0f;
+    public float wallJumpPush = 10f;
+    public float wallJumpForce = 12f;
 
     void Start()
     {
@@ -36,6 +42,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         float xInput = 0f;
+        bool touchingLeftWall = IsTouchingWallLeft();
+        bool touchingRightWall = IsTouchingWallRight();
+
+        bool onWall = touchingLeftWall || touchingRightWall;
 
         //keys for moving
         if (Input.GetKey(KeyCode.A))
@@ -61,6 +71,20 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("false");
         }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            
+        }
+
+        if (onWall && Input.GetButtonDown("Jump"))
+        {
+            int pushDir = touchingLeftWall ? 1 : -1;
+
+            rb.linearVelocity = new Vector2(pushDir * wallJumpPush, wallJumpForce);
+        }
+
+        
     }
 
     private void MovementUpdate(Vector2 playerInput)
@@ -92,15 +116,15 @@ public class PlayerController : MonoBehaviour
         //checks if the player pressed the space bar while also on the ground. this will make them jump
         if (Input.GetKeyDown(KeyCode.Space) && coyoteTimer > 0f)
         {
-            float jumpVelocity = (2f * apexHeight) / apexTime;
-            rb.gravityScale = 0;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
-
-            coyoteTimer = 0f; //prevents double coyote jumps
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
-        else
+
+        if (Input.GetButtonUp("Jump"))
         {
-            rb.gravityScale = 1;
+            if (rb.linearVelocity.y > 0) //only cut off upward movement
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpCutMultiplier);
+            }
         }
 
         //checks if the terminal velocity has been reached. If so, it won't exceed it
@@ -109,6 +133,19 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -terminalSpeed);
         }
 
+        //code I may switch back to but probably not
+        //if (IsGrounded() && Input.GetButtonDown("Jump"))
+        //{
+        //    rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
+       // }
+
+       // if (Input.GetButtonUp("Jump"))
+       // {
+       //     if (rb.linearVelocity.y > 0)
+       //     {
+        //        rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpCutMultiplier);
+        //    }
+       // }
     }
 
     public bool IsWalking()
@@ -162,4 +199,31 @@ public class PlayerController : MonoBehaviour
         return facing;
 
     }
+
+    public bool IsTouchingWallLeft()
+    {
+        float extraWidth = 0.05f; //distance to check sideways
+
+        Vector2 origin = new Vector2(box.bounds.min.x + 0.01f, box.bounds.center.y); //position slightly inside the player's left side
+
+        Vector2 boxSize = new Vector2(0.02f, box.bounds.size.y * 0.9f); //tall vertical box for the side
+
+        RaycastHit2D hit = Physics2D.BoxCast(origin, boxSize, 0f, Vector2.left, extraWidth, wallLayer);
+
+        return hit.collider != null;
+    }
+
+    public bool IsTouchingWallRight()
+    {
+        float extraWidth = 0.05f;
+
+        Vector2 origin = new Vector2(box.bounds.max.x - 0.01f, box.bounds.center.y); //position slightly inside the player's right side
+
+        Vector2 boxSize = new Vector2(0.02f, box.bounds.size.y * 0.9f);
+
+        RaycastHit2D hit = Physics2D.BoxCast(origin, boxSize, 0f, Vector2.right, extraWidth, wallLayer);
+
+        return hit.collider != null;
+    }
+
 }

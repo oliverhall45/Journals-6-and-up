@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -12,7 +15,7 @@ public class PlayerController : MonoBehaviour
         Idle, Walking, Jumping, Dead
     }
 
-    private CharacterState state = CharacterState.Idle;
+    public CharacterState state = CharacterState.Idle;
 
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
@@ -30,6 +33,15 @@ public class PlayerController : MonoBehaviour
     public float terminalSpeed = 5f;
     public float coyoteTime = 0.1f;
     public float coyoteTimer = 0f;
+
+    public float dashSpeed = 20f;
+    public float dashDuration = 0.15f;
+    public float dashCooldown = 0.5f;
+    private bool isDashing = false;
+    public float elapsed = 0f;
+    private Vector2 startPos;
+    private Vector2 endPos;
+
     public float wallJumpPush = 10f;
     public float wallJumpForce = 12f;
 
@@ -72,9 +84,32 @@ public class PlayerController : MonoBehaviour
             Debug.Log("false");
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) )
         {
-            
+            isDashing = true;
+            elapsed = 0f;
+            startPos = transform.position;
+            endPos = startPos + Vector2.left * 5f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F) && facing == FacingDirection.right)
+        {
+            isDashing = true;
+            elapsed = 0f;
+            startPos = transform.position;
+            endPos = startPos + Vector2.right * 5f;
+        }
+
+        if (isDashing)
+        {
+            elapsed += Time.deltaTime;
+            float interpolation = elapsed / dashDuration;
+            transform.position = Vector2.Lerp(startPos, endPos, interpolation);
+
+            if (elapsed >= 0.15f)
+            {
+                isDashing = false;
+            }
         }
 
         if (onWall && Input.GetButtonDown("Jump"))
@@ -86,6 +121,8 @@ public class PlayerController : MonoBehaviour
 
         
     }
+
+    
 
     private void MovementUpdate(Vector2 playerInput)
     {
@@ -184,6 +221,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    
+   
+
     public FacingDirection GetFacingDirection()
     {
         if(currentVelocity.x < 0f)
@@ -199,6 +239,8 @@ public class PlayerController : MonoBehaviour
         return facing;
 
     }
+
+   
 
     public bool IsTouchingWallLeft()
     {
